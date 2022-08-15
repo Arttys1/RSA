@@ -43,6 +43,10 @@ pub mod rsa {
     }
 
     impl PublicKey {
+        pub fn construct(e: i128, n: i128) -> PublicKey {
+            PublicKey {e, n}
+        }
+
         pub fn n(&self) -> i128 {
             self.n
         }
@@ -54,15 +58,27 @@ pub mod rsa {
         pub fn encrypt(&self, message: i128) -> i128 {
             power_modulo(message, self.e, self.n)
         }
+
+        pub fn to_string(&self) -> String {
+            format!("--BEGIN_PUBLIC_KEY--||{}||{}||--END_PUBLIC_KEY--", self.n, self.e)
+        }
     }
 
     impl PrivateKey {
+        pub fn construct(d: i128) -> PrivateKey {
+            PrivateKey{d}
+        }
+
         pub fn d(&self) -> i128 {
             self.d
         }
 
         pub fn decrypt(&self, message: i128, public: &PublicKey) -> i128 {
             power_modulo(message, self.d, public.n)
+        }
+
+        pub fn to_string(&self) -> String {
+            format!("--BEGIN_PRIVATE_KEY--||{}||--END_PRIVATE_KEY--", self.d)
         }
     }
 

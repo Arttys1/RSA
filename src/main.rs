@@ -2,7 +2,9 @@ mod primality;
 mod prime_generator;
 mod tools;
 mod rsa;
+mod network;
 
+use network::network::{NetworkListener, NetworkWriter};
 use crate::primality::primality::{ is_prime_ };
 use crate::prime_generator::gen::{ generator };
 use crate::rsa::rsa::{generate, encrypt_tab, decrypt_tab};
@@ -37,14 +39,20 @@ fn main() {
                 return;
             }
             generate_prime(&args[2]);
-         },
-         "--encrypt" => {
-            if args.len() < 3 {
-                println!("Usage: {} {} <message>", args[0], args[1]);
-                return;
-            }
-            encrypt(&args[2]);
-         }
+        },
+        "--encrypt" => {
+        if args.len() < 3 {
+            println!("Usage: {} {} <message>", args[0], args[1]);
+            return;
+        }
+        encrypt(&args[2]);
+        }
+        "--receiver" => {
+            active_receiver();
+        }
+        "--sender" => {
+            active_sender();
+        }
 
         _ => { println!("Unknown mode. Use --help to have more informations"); },
     };
@@ -62,14 +70,27 @@ fn help() {
     println!("");
     println!("--primality : check if a number is prime");
     println!("--generator : generate a prime number");
+    println!("--encrypt : encrypt and uncrypt a message");
+    println!("--receiver : launch a crypted TCP server");
+    println!("--sender : connect to the receiver and allow to send crypted message");
     println!("--help : display this help");
+}
+
+fn active_receiver() {
+    let listener = NetworkListener::new("127.0.0.1:1234");
+    listener.listen();
+}
+
+fn active_sender() {
+    let mut writer = NetworkWriter::new("127.0.0.1:1234");    
+    writer.listen();
 }
 
 fn encrypt(s: &String) {
     let (public, private) = generate();
 
-    println!("public key : {:?}|{}", public.e(), public.n());
-    println!("private public : {:?}", private.d());
+    println!("public key : {}|{}", public.e(), public.n());
+    println!("private public : {}", private.d());
 
     let tab = s.as_bytes();
     let encrypted_message = encrypt_tab(tab, &public);
