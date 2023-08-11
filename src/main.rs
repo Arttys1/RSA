@@ -87,7 +87,7 @@ fn active_sender() {
 }
 
 fn encrypt(s: &String) {
-    let (public, private) = generate();
+    let (public, private) = generate::<u128>(9);
 
     println!("public key : {}|{}", public.e(), public.n());
     println!("private public : {}", private.d());
@@ -113,7 +113,7 @@ fn generate_prime(s : &String) {
         }
     };
     println!("Generating...");
-    let prime: i128 = generator(n);
+    let prime: u128 = generator(n);
     println!("And... Here is your prime number : {}", prime);
 }
 

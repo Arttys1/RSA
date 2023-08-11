@@ -3,14 +3,14 @@ pub mod gen {
     use num::PrimInt;
     use rand::Rng;
 
-    use crate::primality::primality::is_prime_;
+    use crate::{primality::primality::is_prime_, rsa::rsa::RsaInt};
 
     /**
      * Generate a random prime number of n numbers.
      */
     pub fn generator<T>(n: u8) -> T
     where
-        T : PrimInt  + rand::distributions::uniform::SampleUniform + std::ops::Shr<T, Output = T>
+        T : RsaInt
     {
         let mut rng: T = random_n_number_(n);
         let two : T = T::one() + T::one();
@@ -24,7 +24,7 @@ pub mod gen {
 
     pub fn generator_min<T>(min : T) -> T
     where
-        T : PrimInt + rand::distributions::uniform::SampleUniform + std::ops::Shr<T, Output = T>
+        T : RsaInt
     {
         let mut rng = rand::thread_rng();
         let two : T = T::one() + T::one();
@@ -40,7 +40,7 @@ pub mod gen {
 
     pub fn generator_max<T>(max: T) -> T
     where
-        T : PrimInt + rand::distributions::uniform::SampleUniform + std::ops::Shr<T, Output = T>
+        T : RsaInt
     {
         let mut rng = rand::thread_rng();
         let two : T = T::one() + T::one();
@@ -59,7 +59,7 @@ pub mod gen {
      */
     fn random_n_number_<T>(n: u8) -> T
     where
-        T : PrimInt  + rand::distributions::uniform::SampleUniform
+        T : PrimInt + rand::distributions::uniform::SampleUniform
     {
         let mut number : T = T::zero();
         let mut rng = rand::thread_rng();

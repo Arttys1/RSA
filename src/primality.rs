@@ -3,7 +3,7 @@ pub mod primality {
     use num::PrimInt;
     use rand::Rng;
 
-    use crate::tools::rsa_tools::power_modulo;
+    use crate::{tools::rsa_tools::power_modulo, rsa::rsa::RsaInt};
 
     const K : u8 = 7;
 
@@ -14,8 +14,7 @@ pub mod primality {
      */
     pub fn is_prime_<T>(n: T) -> bool
     where
-        T : PrimInt + rand::distributions::uniform::SampleUniform
-        + std::ops::Shr<T, Output = T>
+        T : RsaInt
      {
         let two: T = T::one() + T::one();
         let mut rng: rand::rngs::ThreadRng = rand::thread_rng();

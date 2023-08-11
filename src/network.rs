@@ -39,13 +39,13 @@ pub mod network {
         fn handle_stream(&self, stream: TcpStream) {
             std::thread::spawn(move || {
                 let mut network = NetworkWriter::construct(stream);
-                let mut keys :(PublicKey, PrivateKey) = (PublicKey::construct(0, 0), PrivateKey::construct(0));
+                let mut keys :(PublicKey<u128>, PrivateKey<u128>) = (PublicKey::construct(0, 0), PrivateKey::construct(0));
                 let mut err = 0;
                 loop {
                     match network.read().to_lowercase().as_str() {
                         "start" => {
                             println!("generate keys");
-                            keys = generate();
+                            keys = generate(9);
                             let public_key_str = keys.0.to_string();
                             println!("{}", public_key_str);
                             network.write(public_key_str.as_str());
@@ -146,13 +146,13 @@ pub mod network {
             }
         }
 
-        fn parse_public_key(&self, received: &String) -> PublicKey {
+        fn parse_public_key(&self, received: &String) -> PublicKey<u128> {
             println!("{}", received);
 
-            let parser = |i: usize| -> i128 {
+            let parser = |i: usize| -> u128 {
                 let mut split = received.split("||");
                 match split.nth(i) {
-                    Some(res) => match res.parse::<i128>() {
+                    Some(res) => match res.parse::<u128>() {
                             Ok(a) => a,
                             Err(e) => panic!("{}", e)
                         },

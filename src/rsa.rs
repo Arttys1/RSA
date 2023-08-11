@@ -3,20 +3,37 @@ pub mod rsa {
     use crate::prime_generator::gen::{ generator, generator_max };
     use crate::tools::rsa_tools::{ modular_inverse, power_modulo };
 
+    //trait to regroup multiple traits
+    pub trait RsaInt:
+        num::PrimInt +
+        rand::distributions::uniform::SampleUniform +
+        std::ops::Shr<Self, Output = Self> +
+        std::fmt::Display {}
+
+    impl<T: num::PrimInt +
+        rand::distributions::uniform::SampleUniform +
+        std::ops::Shr<Self, Output = Self> +
+        std::fmt::Display>
+        RsaInt for T {}
+
     /**
      * The public key use in the RSA algorithm.
      */
-    pub struct PublicKey {
-        n: i128,    //crypto modulus
-        e: i128,    //crypto exponent
+    pub struct PublicKey<T>
+    where T: RsaInt
+    {
+        n: T,    //crypto modulus
+        e: T,    //crypto exponent
     }
 
     /**
      * The private key use in the RSA algorithm.
      * !! this key must be keep secret !!
      */
-    pub struct PrivateKey {
-        d: i128,    //decryption exponent
+    pub struct PrivateKey<T>
+    where T: RsaInt
+    {
+        d: T,    //decryption exponent
     }
 
     /**
@@ -27,35 +44,37 @@ pub mod rsa {
      * !! Private key must be keep secret !!
      * @return the public and the private key
      */
-    pub fn generate() -> (PublicKey, PrivateKey) {
-        const N : u8 = 9;
-        let p: i128 = generator(N);
-        let mut q: i128 = generator(N);
+    pub fn generate<T>(size: u8) -> (PublicKey<T>, PrivateKey<T>)
+    where T: RsaInt
+    {
+        let p: T = generator(size);
+        let mut q: T = generator(size);
         while p == q {
-            q = generator(N);
+            q = generator(size);
         }
-
-        let n: i128 = p * q;
-        let phi: i128 = (p - 1) * (q - 1);
-        let e: i128 = generator_max(phi);
-        let d: i128 = modular_inverse(e, phi);
+        let n: T = p * q;
+        let phi: T = (p - T::one()) * (q - T::one());
+        let e: T = generator_max(phi);
+        let d: T = modular_inverse(e, phi);
         (PublicKey {e, n}, PrivateKey { d })
     }
 
-    impl PublicKey {
-        pub fn construct(e: i128, n: i128) -> PublicKey {
+    impl<T> PublicKey<T>
+    where T: RsaInt
+    {
+        pub fn construct(e: T, n: T) -> PublicKey<T> {
             PublicKey {e, n}
         }
 
-        pub fn n(&self) -> i128 {
+        pub fn n(&self) -> T {
             self.n
         }
 
-        pub fn e(&self) -> i128 {
+        pub fn e(&self) -> T {
             self.e
         }
 
-        pub fn encrypt(&self, message: i128) -> i128 {
+        pub fn encrypt(&self, message: T) -> T {
             power_modulo(message, self.e, self.n)
         }
 
@@ -64,16 +83,18 @@ pub mod rsa {
         }
     }
 
-    impl PrivateKey {
-        pub fn construct(d: i128) -> PrivateKey {
+    impl<T> PrivateKey<T>
+    where T: RsaInt
+    {
+        pub fn construct(d: T) -> PrivateKey<T> {
             PrivateKey{d}
         }
 
-        pub fn d(&self) -> i128 {
+        pub fn d(&self) -> T {
             self.d
         }
 
-        pub fn decrypt(&self, message: i128, public: &PublicKey) -> i128 {
+        pub fn decrypt(&self, message: T, public: &PublicKey<T>) -> T {
             power_modulo(message, self.d, public.n)
         }
 
@@ -89,8 +110,10 @@ pub mod rsa {
      *
      * @return the encrypted message.
      */
-    pub fn encrypt(message: u128, key: &PublicKey) -> u128 {
-        power_modulo(message, key.e as u128, key.n as u128)
+    pub fn encrypt<T>(message: T, key: &PublicKey<T>) -> T
+    where T: RsaInt
+    {
+        power_modulo(message, key.e, key.n)
     }
 
     /**
@@ -101,19 +124,25 @@ pub mod rsa {
      *
      * @return the decrypted message.
      */
-    pub fn decrypt(cipher_message: u128, public_key: &PublicKey, private_key: &PrivateKey) -> u128 {
-        power_modulo(cipher_message, private_key.d as u128, public_key.n as u128)
+    pub fn decrypt<T>(cipher_message: T, public_key: &PublicKey<T>, private_key: &PrivateKey<T>) -> T
+    where T: RsaInt
+    {
+        power_modulo(cipher_message, private_key.d, public_key.n)
     }
 
-    pub fn encrypt_tab(m : &[u8], key : &PublicKey) -> Vec<u128> {
+    pub fn encrypt_tab<T>(m : &[u8], key : &PublicKey<T>) -> Vec<T>
+    where T: RsaInt
+    {
         let mut c = Vec::with_capacity(m.len());
         for i in 0..m.len() {
-            c.push(encrypt(m[i] as u128, key));
+            c.push(encrypt(T::from(m[i]).unwrap(), key));
         }
         c
     }
 
-    pub fn decrypt_tab(c : &[u128], key : &PublicKey, private_key : &PrivateKey) -> Vec<u128> {
+    pub fn decrypt_tab<T>(c : &[T], key : &PublicKey<T>, private_key : &PrivateKey<T>) -> Vec<T>
+    where T: RsaInt
+    {
         let mut m = Vec::with_capacity(c.len());
         for i in 0..c.len() {
             m.push(decrypt(c[i], key, private_key));
