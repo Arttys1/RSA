@@ -17,7 +17,7 @@ pub mod network {
             let listener = match TcpListener::bind(addr) {
                 Ok(listener) => listener,
                 Err(e) => panic!("Error : {}", e),
-            };            
+            };
             NetworkListener { listener }
         }
 
@@ -31,7 +31,7 @@ pub mod network {
                     }
                     Err(e) => {
                         println!("Error: {}", e);
-                    }     
+                    }
                 }
             }
         }
@@ -41,7 +41,7 @@ pub mod network {
                 let mut network = NetworkWriter::construct(stream);
                 let mut keys :(PublicKey, PrivateKey) = (PublicKey::construct(0, 0), PrivateKey::construct(0));
                 let mut err = 0;
-                loop {                 
+                loop {
                     match network.read().to_lowercase().as_str() {
                         "start" => {
                             println!("generate keys");
@@ -50,7 +50,7 @@ pub mod network {
                             println!("{}", public_key_str);
                             network.write(public_key_str.as_str());
                         }
-                        received => {                            
+                        received => {
                             if !received.is_empty() {
                                 //decrypt with private key
                                 println!("received : {}", received);
@@ -71,7 +71,7 @@ pub mod network {
                                 }
                             }
                         }
-                    }                    
+                    }
                     std::thread::sleep(std::time::Duration::from_millis(200));
                 }
 
@@ -85,7 +85,7 @@ pub mod network {
                 match s.parse::<u128>() {
                     Ok(x) => x,
                     Err(e) => panic!("{}", e),
-                }                
+                }
             };
 
             for s in split {
@@ -97,7 +97,7 @@ pub mod network {
 
             res
         }
-        
+
     }
 
 
@@ -159,7 +159,7 @@ pub mod network {
                     None => panic!("out of bound split"),
                 }
             };
-            let e = parser(2);            
+            let e = parser(2);
             let n = parser(1);
             PublicKey::construct(e, n)
         }
@@ -177,7 +177,7 @@ pub mod network {
                 _in.read_line(&mut input).expect("unable to get input");
                 input
             };
-            
+
             let mut input = get_input_user();
             while &input[0..&input.len() - 2] != "stop" {
                 let encrypted = encrypt_tab(input.as_bytes(), &public);
@@ -186,7 +186,7 @@ pub mod network {
                     message.push_str(format!("{}|", i).as_str());
                 }
                 self.write(&message);
-                
+
                 input = get_input_user();
             }
 

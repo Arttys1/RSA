@@ -3,7 +3,7 @@ pub mod gen {
     use num::PrimInt;
     use rand::Rng;
 
-    use crate::primality::primality::{ is_prime_ };
+    use crate::primality::primality::is_prime_;
 
     /**
      * Generate a random prime number of n numbers.
