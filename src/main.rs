@@ -5,8 +5,8 @@ mod rsa;
 mod network;
 
 use network::network::{NetworkListener, NetworkWriter};
-use crate::primality::primality::{ is_prime_ };
-use crate::prime_generator::gen::{ generator };
+use crate::primality::primality::is_prime_;
+use crate::prime_generator::gen::generator;
 use crate::rsa::rsa::{generate, encrypt_tab, decrypt_tab};
 
 use chrono::prelude::{DateTime, Local};
