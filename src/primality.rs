@@ -1,6 +1,5 @@
 #[allow(dead_code)]
 pub mod primality {
-    use num::PrimInt;
     use rand::Rng;
 
     use crate::{tools::rsa_tools::power_modulo, rsa::rsa::RsaInt};
@@ -13,8 +12,7 @@ pub mod primality {
      * @return true if n is prime, false otherwise.
      */
     pub fn is_prime_<T>(n: T) -> bool
-    where
-        T : RsaInt
+    where T: RsaInt
      {
         let two: T = T::one() + T::one();
         let mut rng: rand::rngs::ThreadRng = rand::thread_rng();
@@ -29,8 +27,7 @@ pub mod primality {
     }
 
     fn miller_rabin_test_<T>(n: T, a: T) -> bool
-    where
-        T: PrimInt + std::ops::Shr<T, Output = T>
+    where T: RsaInt
     {
         let tab : (T, T) = s_and_d_(n);
         let s : T = tab.0;
@@ -53,8 +50,7 @@ pub mod primality {
     }
 
     fn s_and_d_<T>(n: T) -> (T, T)
-    where
-        T : PrimInt
+    where T: RsaInt
     {
         let two: T = T::one() + T::one();
         let mut d: T = n - T::one();

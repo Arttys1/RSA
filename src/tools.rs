@@ -1,6 +1,8 @@
 #[allow(dead_code)]
 
 pub mod rsa_tools {
+    use crate::rsa::rsa::RsaInt;
+
     /**
      * Modular exponentiation by square algorithm.
      * This function return the Modular exponentiation in a O(log(n)) complexity.
@@ -13,8 +15,7 @@ pub mod rsa_tools {
      * @return nb^pow % modulo
      */
     pub fn power_modulo<T>(mut nb: T, mut pow :T, modulo: T) -> T
-    where
-        T :  num::PrimInt + std::ops::Shr<T, Output = T>
+    where T: RsaInt
     {
         let mut result: T = T::one();
 
@@ -22,7 +23,7 @@ pub mod rsa_tools {
             if pow & T::one() > T::zero() {
                 result = (result * nb) % modulo;
             }
-            pow = pow >> T::one();
+            pow = pow >> 1u8;
             nb = (nb * nb) % modulo;
         }
 
@@ -68,8 +69,7 @@ pub mod rsa_tools {
      * If a and b are coprime then u and v are the multiplicative inverses of a and b.
      */
     pub fn extended_euclidean_algorithm_unsigned<T>(a: T, b: T) -> (T, T, T)
-    where
-        T : num::PrimInt
+    where T: RsaInt
     {
         let two = T::one() + T::one();
         let mut r0 = a;
@@ -123,8 +123,7 @@ pub mod rsa_tools {
      * Panic if there is no modular inverse (a and b no coprime).
      */
     pub fn modular_inverse<T>(a: T, b: T) -> T
-    where
-        T : num::PrimInt
+    where T: RsaInt
     {
         let (r, _, v): (T, T, T) = extended_euclidean_algorithm_unsigned(b, a);
         if r != T::one() {

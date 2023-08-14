@@ -5,16 +5,29 @@ pub mod rsa {
 
     //trait to regroup multiple traits
     pub trait RsaInt:
-        num::PrimInt +
-        rand::distributions::uniform::SampleUniform +
-        std::ops::Shr<Self, Output = Self> +
-        std::fmt::Display {}
+        Copy +
+        Clone +
+        From<u8> +
+        std::ops::Shr<u8, Output = Self>  +
+        std::ops::BitAnd<Output = Self> +
+        std::fmt::Display +
+        num::Integer +
+        num::ToPrimitive +
+        num::traits::Pow<u32, Output = Self> +
+        rand::distributions::uniform::SampleUniform {}
 
-    impl<T: num::PrimInt +
-        rand::distributions::uniform::SampleUniform +
-        std::ops::Shr<Self, Output = Self> +
-        std::fmt::Display>
-        RsaInt for T {}
+    impl<T:
+        Copy +
+        Clone +
+        From<u8> +
+        std::ops::Shr<u8, Output = Self>  +
+        std::ops::BitAnd<Output = Self> +
+        std::fmt::Display +
+        num::Integer +
+        num::ToPrimitive +
+        num::traits::Pow<u32, Output = Self> +
+        rand::distributions::uniform::SampleUniform>
+    RsaInt for T {}
 
     /**
      * The public key use in the RSA algorithm.
@@ -135,7 +148,7 @@ pub mod rsa {
     {
         let mut c = Vec::with_capacity(m.len());
         for i in 0..m.len() {
-            c.push(encrypt(T::from(m[i]).unwrap(), key));
+            c.push(encrypt(T::from(m[i]), key));
         }
         c
     }
