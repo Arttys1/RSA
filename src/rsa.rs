@@ -8,7 +8,8 @@ pub mod rsa {
         Copy +
         Clone +
         From<u8> +
-        std::ops::Shr<u8, Output = Self>  +
+        std::ops::Shr<u8,Output = Self> +
+        std::ops::Shl<u8,Output = Self> +
         std::ops::BitAnd<Output = Self> +
         std::fmt::Display +
         num::Integer +
@@ -20,7 +21,8 @@ pub mod rsa {
         Copy +
         Clone +
         From<u8> +
-        std::ops::Shr<u8, Output = Self>  +
+        std::ops::Shr<u8,Output = Self> +
+        std::ops::Shl<u8,Output = Self> +
         std::ops::BitAnd<Output = Self> +
         std::fmt::Display +
         num::Integer +

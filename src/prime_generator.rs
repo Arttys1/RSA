@@ -11,9 +11,7 @@ pub mod gen {
     where T: RsaInt
     {
         let mut rng: T = random_n_number_(n);
-        let two : T = T::one() + T::one();
-
-        while (rng % two) == T::zero() || !is_prime_(rng) {
+        while (rng & T::one()) == T::zero() || !is_prime_(rng) {
             rng = rng + T::one();
         }
 
@@ -24,12 +22,14 @@ pub mod gen {
     where T : RsaInt
     {
         let mut rng = rand::thread_rng();
-        let two : T = T::one() + T::one();
+        let twomin = min << 1u8; // min * 2
+        let mut n: T = rng.gen_range(min..=twomin);
 
-        let mut n: T = rng.gen_range(min..=min * two);
-
-        while n % two == T::zero() || !is_prime_(n) {
+        while n & T::one() == T::zero() || !is_prime_(n) {
             n = n + T::one();
+            if n > twomin {
+                n = rng.gen_range(min..=twomin);
+            }
         }
 
         n
@@ -39,12 +39,14 @@ pub mod gen {
     where T: RsaInt
     {
         let mut rng = rand::thread_rng();
-        let two : T = T::one() + T::one();
+        let halfmax = max >> 1u8; // max / 2;
+        let mut n: T = rng.gen_range(halfmax..max);
 
-        let mut n: T = rng.gen_range((max / two) ..max);
-
-        while n % two == T::zero() || !is_prime_(n) {
+        while n & T::one() == T::zero() || !is_prime_(n) {
             n = n + T::one();
+            if n > max {
+                n = rng.gen_range(halfmax..max);
+            }
         }
 
         n

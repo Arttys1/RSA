@@ -52,11 +52,10 @@ pub mod primality {
     fn s_and_d_<T>(n: T) -> (T, T)
     where T: RsaInt
     {
-        let two: T = T::one() + T::one();
         let mut d: T = n - T::one();
         let mut s: T = T::zero();
-        while d % two == T::zero() {
-            d = d / two;
+        while d & T::one() == T::zero() {
+            d = d >> 1u8;
             s = s + T::one();
         }
         (s, d)

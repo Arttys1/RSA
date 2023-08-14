@@ -71,7 +71,6 @@ pub mod rsa_tools {
     pub fn extended_euclidean_algorithm_unsigned<T>(a: T, b: T) -> (T, T, T)
     where T: RsaInt
     {
-        let two = T::one() + T::one();
         let mut r0 = a;
         let mut s0 = T::one();
         let mut t0 = T::zero();
@@ -90,7 +89,7 @@ pub mod rsa_tools {
             n = n + T::one();
         }
         // gcd = r0
-        if n % two != T::zero() {
+        if n & T::one() != T::zero() {
             s0 = b - s0;
         }
         else {
