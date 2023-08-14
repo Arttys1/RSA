@@ -62,7 +62,13 @@ fn main() {
     let mut  millis: i64 = delta_time.num_milliseconds();
     let s: i64 = millis / 1000;
     millis %= 1000;
-    println!("Operation performed in {}s {}ms", s, millis);
+    if s != 0 || millis != 0 {
+        println!("Operation performed in {}s {}ms", s, millis);
+    } else {
+        let micros = delta_time.num_microseconds().unwrap();
+        println!("Operation performed in {}microseconds", micros);
+    }
+
 }
 
 fn help() {
@@ -118,6 +124,10 @@ fn generate_prime(s : &String) {
 }
 
 fn check_primality(s: &String) {
+    if s.starts_with("-") {
+        println!("The number is negative, can't be prime.");
+        return;
+    }
     let n : u128 =  match s.parse::<u128>() {
         Ok(n) => n,
         Err(_) => {
